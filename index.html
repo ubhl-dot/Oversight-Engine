@@ -3,13 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Oversight Initiative - Bot Order Hub</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <title>Oversight Initiative // Kernel Terminal</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --bg-matrix: #060913;
+            --surface-panel: #0d1527;
+            --border-glow: #1e3a8a;
+            --text-primary: #f8fafc;
+            --text-muted: #64748b;
+            --neon-blue: #3b82f6;
+            --neon-emerald: #10b981;
+        }
+
         body {
-            font-family: 'Inter', sans-serif;
-            background-color: #0F172A;
-            color: #F8FAFC;
+            font-family: 'JetBrains Mono', monospace;
+            background-color: var(--bg-matrix);
+            background-image: 
+                linear-gradient(rgba(30, 58, 138, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(30, 58, 138, 0.05) 1px, transparent 1px);
+            background-size: 20px 20px;
+            color: var(--text-primary);
             display: flex;
             justify-content: center;
             align-items: center;
@@ -17,38 +31,129 @@
             margin: 0;
             padding: 20px;
         }
-        .checkout-card {
-            background-color: #1E293B;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+
+        .terminal-container {
+            background-color: var(--surface-panel);
+            border: 1px solid var(--border-glow);
+            border-radius: 4px;
+            box-shadow: 0 0 30px rgba(30, 58, 138, 0.2);
             width: 100%;
-            max-width: 450px;
+            max-width: 460px;
+            overflow: hidden;
         }
-        h2 { margin-top: 0; color: #3B82F6; text-align: center; }
-        .form-group { margin-bottom: 20px; }
-        label { display: block; margin-bottom: 8px; font-weight: 600; font-size: 14px; }
+
+        .terminal-header {
+            background-color: #090d1a;
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border-glow);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .terminal-dots {
+            display: flex;
+            gap: 6px;
+        }
+
+        .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: #1e293b;
+        }
+        .dot.active { background-color: var(--neon-blue); box-shadow: 0 0 8px var(--neon-blue); }
+
+        .status-badge {
+            font-size: 11px;
+            text-transform: uppercase;
+            color: var(--neon-emerald);
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .status-pulse {
+            width: 6px;
+            height: 6px;
+            background-color: var(--neon-emerald);
+            border-radius: 50%;
+            animation: pulse 1.8s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(0.95); opacity: 0.5; }
+            50% { transform: scale(1.2); opacity: 1; box-shadow: 0 0 8px var(--neon-emerald); }
+            100% { transform: scale(0.95); opacity: 0.5; }
+        }
+
+        .terminal-body {
+            padding: 28px;
+        }
+
+        .brand-title {
+            margin: 0 0 6px 0;
+            font-size: 18px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            text-transform: uppercase;
+        }
+
+        .brand-subtitle {
+            margin: 0 0 28px 0;
+            font-size: 12px;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        .input-group {
+            margin-bottom: 22px;
+        }
+
+        label {
+            display: block;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+
         input, select {
             width: 100%;
             padding: 12px;
-            border-radius: 6px;
-            border: 1px solid #475569;
-            background-color: #0F172A;
-            color: white;
-            font-size: 15px;
-            box-sizing: border-box;
-        }
-        input:focus, select:focus { outline: 2px solid #3B82F6; }
-        #paypal-button-container { margin-top: 25px; min-height: 150px; }
-        .alert {
-            padding: 12px;
-            background-color: #064E3B;
-            color: #A7F3D0;
-            border-radius: 6px;
-            margin-bottom: 20px;
-            display: none;
-            text-align: center;
+            border: 1px solid #1e293b;
+            border-radius: 4px;
+            background-color: #060913;
+            color: var(--text-primary);
+            font-family: 'JetBrains Mono', monospace;
             font-size: 14px;
+            box-sizing: border-box;
+            transition: all 0.2s ease;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--neon-blue);
+            box-shadow: 0 0 10px rgba(59, 130, 246, 0.15);
+        }
+
+        #paypal-button-container {
+            margin-top: 30px;
+            min-height: 150px;
+        }
+
+        .system-alert {
+            background-color: rgba(16, 185, 129, 0.1);
+            border: 1px solid var(--neon-emerald);
+            color: #a7f3d0;
+            padding: 14px;
+            border-radius: 4px;
+            font-size: 12px;
+            margin-bottom: 24px;
+            display: none;
+            line-height: 1.4;
         }
     </style>
 
@@ -56,47 +161,65 @@
 </head>
 <body>
 
-    <div class="checkout-card">
-        <h2>Oversight Initiative Shop</h2>
-        <p style="text-align: center; color: #94A3B8; font-size: 14px; margin-bottom: 25px;">Complete your purchase to unlock your bot license instantly.</p>
+    <div class="terminal-container">
+        <div class="terminal-header">
+            <div class="terminal-dots">
+                <div class="dot active"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+            </div>
+            <div class="status-badge">
+                <div class="status-pulse"></div> Kernel Connected
+            </div>
+        </div>
         
-        <div id="success-alert" class="alert">✅ Order authorized! Check your Discord server for your bot license.</div>
+        <div class="terminal-body">
+            <h1 class="brand-title">Oversight Initiative</h1>
+            <p class="brand-subtitle">License Authorization Node // Provisioning Interface</p>
+            
+            <div id="success-alert" class="system-alert">
+                ⚡ SECURE TRANSMISSION SUCCESSFUL.<br>
+                Payment authorized. Cryptographic token has been routed into your indexed Discord matrix.
+            </div>
 
-        <div class="form-group">
-            <label for="discord-id">Your Discord User ID *</label>
-            <input type="text" id="discord-id" placeholder="e.g. 1514849579818815508" required>
+            <div class="input-group">
+                <label for="discord-id">Target User Snowflake ID</label>
+                <input type="text" id="discord-id" placeholder="e.g. 1514849579818815508" autocomplete="off" required>
+            </div>
+
+            <div class="input-group">
+                <label for="tier-select">Select Configuration Tier Matrix</label>
+                <select id="tier-select">
+                    <option value="Baseline_Tier" data-price="35.00">Baseline League Suite ($35.00)</option>
+                    <option value="Semi_Automated_Tier" data-price="50.00">Semi-Automated Suite ($50.00)</option>
+                    <option value="MegaLeague_Tier" data-price="250.00">MegaLeague Deployment ($250.00)</option>
+                    <option value="General_Purpose_Bot" data-price="30.00">General Utility Node ($30.00)</option>
+                </select>
+            </div>
+
+            <div class="input-group">
+                <label id="context-label" for="context-name">Target League Scope Identity</label>
+                <input type="text" id="context-name" placeholder="e.g. National Roblox League" autocomplete="off" required>
+            </div>
+
+            <div id="paypal-button-container"></div>
         </div>
-
-        <div class="form-group">
-            <label for="tier-select">Select Bot Tier Package *</label>
-            <select id="tier-select">
-                <option value="Baseline_Tier" data-price="35.00">Baseline League Bot ($35.00)</option>
-                <option value="Semi_Automated_Tier" data-price="50.00">Semi-Automated Bot ($50.00)</option>
-                <option value="MegaLeague_Tier" data-price="250.00">MegaLeague Suite ($250.00)</option>
-                <option value="General_Purpose_Bot" data-price="30.00">General Purpose Utility Bot ($30.00)</option>
-            </select>
-        </div>
-
-        <div class="form-group">
-            <label id="context-label" for="context-name">League / Server Name *</label>
-            <input type="text" id="context-name" placeholder="e.g. NRL, Community Server" required>
-        </div>
-
-        <div id="paypal-button-container"></div>
     </div>
 
     <script>
-        // Adjust the price context field labeling depending on the selection
+        // Track input labeling to switch safely if they jump to a general service tier
         document.getElementById('tier-select').addEventListener('change', function() {
             const label = document.getElementById('context-label');
+            const targetInput = document.getElementById('context-name');
             if (this.value === 'General_Purpose_Bot') {
-                label.innerText = "Target Server Name *";
+                label.innerText = "Target Server Scope Identity";
+                targetInput.placeholder = "e.g. Community Center Guild";
             } else {
-                label.innerText = "League Name *";
+                label.innerText = "Target League Scope Identity";
+                targetInput.placeholder = "e.g. National Roblox League";
             }
         });
 
-        // Render the smart payment button network
         paypal.Buttons({
             style: {
                 layout: 'vertical',
@@ -112,14 +235,12 @@
                 const chosenTier = selectElement.value;
                 const priceValue = selectElement.options[selectElement.selectedIndex].getAttribute('data-price');
 
-                // Form validation guardrail
                 if (!discordId || !contextName) {
-                    alert('Please complete all required data input fields before checking out.');
+                    alert('CRITICAL ABORT: Identity data strings must be filled prior to runtime validation.');
                     return false;
                 }
 
-                // 🧵 STITCH THE SYSTEM METADATA STRING: "DISCORD_ID|PRODUCT_TIER|DEPLOYMENT_NAME"
-                // This is precisely what your server.js splits apart upon arrival!
+                // 🧵 Array mapping: "DISCORD_ID|PRODUCT_TIER|DEPLOYMENT_NAME"
                 const trackingMetadata = `${discordId}|${chosenTier}|${contextName}`;
 
                 return actions.order.create({
@@ -128,8 +249,8 @@
                             value: priceValue,
                             currency_code: 'USD'
                         },
-                        description: `Oversight Engine - ${chosenTier.replace(/_/g, ' ')} Subscription`,
-                        custom_id: trackingMetadata // 🎯 This passes securely to the webhook event
+                        description: `Oversight Core Software Access - Tier: ${chosenTier}`,
+                        custom_id: trackingMetadata
                     }]
                 });
             },
@@ -141,8 +262,8 @@
                 });
             },
             onError: function (err) {
-                console.error('PayPal Runtime Checkout Intercept Error:', err);
-                alert('An error occurred processing your checkout window parameters.');
+                console.error('PAYPAL RUNTIME INTERRUPTION DETECTED:', err);
+                alert('SYSTEM FAULT: Transaction gateway handshake dropped.');
             }
         }).render('#paypal-button-container');
     </script>
