@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Oversight Initiative - Bot Order Hub</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0F172A;
+            color: #F8FAFC;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+        .checkout-card {
+            background-color: #1E293B;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            width: 100%;
+            max-width: 450px;
+        }
+        h2 { margin-top: 0; color: #3B82F6; text-align: center; }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; font-weight: 600; font-size: 14px; }
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border-radius: 6px;
+            border: 1px solid #475569;
+            background-color: #0F172A;
+            color: white;
+            font-size: 15px;
+            box-sizing: border-box;
+        }
+        input:focus, select:focus { outline: 2px solid #3B82F6; }
+        #paypal-button-container { margin-top: 25px; min-height: 150px; }
+        .alert {
+            padding: 12px;
+            background-color: #064E3B;
+            color: #A7F3D0;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            display: none;
+            text-align: center;
+            font-size: 14px;
+        }
+    </style>
+
+    <script src="https://www.paypal.com/sdk/js?client-id=YOUR_LIVE_PAYPAL_CLIENT_ID&currency=USD&enable-funding=venmo"></script>
+</head>
+<body>
+
+    <div class="checkout-card">
+        <h2>Oversight Initiative Shop</h2>
+        <p style="text-align: center; color: #94A3B8; font-size: 14px; margin-bottom: 25px;">Complete your purchase to unlock your bot license instantly.</p>
+        
+        <div id="success-alert" class="alert">✅ Order authorized! Check your Discord server for your bot license.</div>
+
+        <div class="form-group">
+            <label for="discord-id">Your Discord User ID *</label>
+            <input type="text" id="discord-id" placeholder="e.g. 1514849579818815508" required>
+        </div>
+
+        <div class="form-group">
+            <label for="tier-select">Select Bot Tier Package *</label>
+            <select id="tier-select">
+                <option value="Baseline_Tier" data-price="35.00">Baseline League Bot ($35.00)</option>
+                <option value="Semi_Automated_Tier" data-price="50.00">Semi-Automated Bot ($50.00)</option>
+                <option value="MegaLeague_Tier" data-price="250.00">MegaLeague Suite ($250.00)</option>
+                <option value="General_Purpose_Bot" data-price="30.00">General Purpose Utility Bot ($30.00)</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label id="context-label" for="context-name">League / Server Name *</label>
+            <input type="text" id="context-name" placeholder="e.g. NRL, Community Server" required>
+        </div>
+
+        <div id="paypal-button-container"></div>
+    </div>
+
+    <script>
+        // Adjust the price context field labeling depending on the selection
+        document.getElementById('tier-select').addEventListener('change', function() {
+            const label = document.getElementById('context-label');
+            if (this.value === 'General_Purpose_Bot') {
+                label.innerText = "Target Server Name *";
+            } else {
+                label.innerText = "League Name *";
+            }
+        });
+
+        // Render the smart payment button network
+        paypal.Buttons({
+            style: {
+                layout: 'vertical',
+                color:  'blue',
+                shape:  'rect',
+                label:  'checkout'
+            },
+            createOrder: function(data, actions) {
+                const discordId = document.getElementById('discord-id').value.trim();
+                const contextName = document.getElementById('context-name').value.trim();
+                
+                const selectElement = document.getElementById('tier-select');
+                const chosenTier = selectElement.value;
+                const priceValue = selectElement.options[selectElement.selectedIndex].getAttribute('data-price');
+
+                // Form validation guardrail
+                if (!discordId || !contextName) {
+                    alert('Please complete all required data input fields before checking out.');
+                    return false;
+                }
+
+                // 🧵 STITCH THE SYSTEM METADATA STRING: "DISCORD_ID|PRODUCT_TIER|DEPLOYMENT_NAME"
+                // This is precisely what your server.js splits apart upon arrival!
+                const trackingMetadata = `${discordId}|${chosenTier}|${contextName}`;
+
+                return actions.order.create({
+                    purchase_units: [{
+                        amount: {
+                            value: priceValue,
+                            currency_code: 'USD'
+                        },
+                        description: `Oversight Engine - ${chosenTier.replace(/_/g, ' ')} Subscription`,
+                        custom_id: trackingMetadata // 🎯 This passes securely to the webhook event
+                    }]
+                });
+            },
+            onApprove: function(data, actions) {
+                return actions.order.capture().then(function(details) {
+                    document.getElementById('success-alert').style.display = 'block';
+                    document.getElementById('discord-id').value = '';
+                    document.getElementById('context-name').value = '';
+                });
+            },
+            onError: function (err) {
+                console.error('PayPal Runtime Checkout Intercept Error:', err);
+                alert('An error occurred processing your checkout window parameters.');
+            }
+        }).render('#paypal-button-container');
+    </script>
+</body>
+</html>
