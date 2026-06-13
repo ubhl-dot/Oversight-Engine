@@ -14,6 +14,7 @@
             --text-muted: #64748b;
             --neon-blue: #3b82f6;
             --neon-emerald: #10b981;
+            --neon-amber: #f59e0b;
         }
 
         body {
@@ -58,7 +59,7 @@
         .status-badge {
             font-size: 11px;
             text-transform: uppercase;
-            color: var(--neon-emerald);
+            color: var(--neon-amber);
             letter-spacing: 1px;
             display: flex;
             align-items: center;
@@ -68,14 +69,14 @@
         .status-pulse {
             width: 6px;
             height: 6px;
-            background-color: var(--neon-emerald);
+            background-color: var(--neon-amber);
             border-radius: 50%;
             animation: pulse 1.8s infinite;
         }
 
         @keyframes pulse {
             0% { transform: scale(0.95); opacity: 0.5; }
-            50% { transform: scale(1.2); opacity: 1; box-shadow: 0 0 8px var(--neon-emerald); }
+            50% { transform: scale(1.2); opacity: 1; box-shadow: 0 0 8px var(--neon-amber); }
             100% { transform: scale(0.95); opacity: 0.5; }
         }
 
@@ -98,7 +99,50 @@
         }
 
         input:focus, select:focus { outline: none; border-color: var(--neon-blue); box-shadow: 0 0 10px rgba(59, 130, 246, 0.15); }
-        #paypal-button-container { margin-top: 30px; min-height: 150px; }
+        input:disabled, select:disabled { opacity: 0.5; background-color: #090d1a; cursor: not-allowed; }
+
+        .action-btn {
+            width: 100%;
+            padding: 14px;
+            background-color: transparent;
+            border: 1px solid var(--neon-blue);
+            color: var(--neon-blue);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+            margin-top: 10px;
+        }
+
+        .action-btn:hover {
+            background-color: rgba(59, 130, 246, 0.1);
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.3);
+        }
+
+        .edit-btn {
+            background-color: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            text-decoration: underline;
+            cursor: pointer;
+            display: none;
+            margin-top: 15px;
+            text-align: center;
+            width: 100%;
+        }
+
+        #payment-wrapper {
+            display: none;
+            margin-top: 25px;
+            border-top: 1px dashed #1e293b;
+            padding-top: 25px;
+        }
         
         .system-alert {
             background-color: rgba(16, 185, 129, 0.1);
@@ -119,7 +163,7 @@
     <div class="terminal-container">
         <div class="terminal-header">
             <div class="terminal-dots"><div class="dot active"></div><div class="dot"></div><div class="dot"></div></div>
-            <div class="status-badge"><div class="status-pulse"></div> Global Utility Node</div>
+            <div id="status-text" class="status-badge"><div class="status-pulse"></div> Awaiting Input Configuration</div>
         </div>
         
         <div class="terminal-body">
@@ -131,7 +175,6 @@
                 Fulfillment processed. Check your administration log terminal for your license.
             </div>
 
-            <!-- 🔄 UPDATED LABEL HERE -->
             <div class="input-group">
                 <label for="discord-id">Discord User ID</label>
                 <input type="text" id="discord-id" placeholder="e.g. 1514849579818815508" autocomplete="off" required>
@@ -151,11 +194,51 @@
                 <input type="text" id="context-name" placeholder="e.g. Oversight Support Hub" autocomplete="off" required>
             </div>
 
-            <div id="paypal-button-container"></div>
+            <button type="button" id="initialize-btn" class="action-btn" onclick="lockAndLoadForm()">Initialize Gateway Matrix</button>
+
+            <div id="payment-wrapper">
+                <label style="text-align: center; margin-bottom: 15px; display: block; color: var(--neon-emerald)">[ Secure Payment Link Generated Below ]</label>
+                <div id="paypal-button-container"></div>
+                <button type="button" id="edit-btn" class="edit-btn" onclick="unlockForm()">❌ Reset Configuration Parameters</button>
+            </div>
         </div>
     </div>
 
     <script>
+        function lockAndLoadForm() {
+            const discordId = document.getElementById('discord-id').value.trim();
+            const contextName = document.getElementById('context-name').value.trim();
+
+            if (!discordId || !contextName) {
+                alert('CRITICAL ABORT: Identity data strings must be filled prior to runtime validation.');
+                return;
+            }
+
+            document.getElementById('discord-id').disabled = true;
+            document.getElementById('tier-select').disabled = true;
+            document.getElementById('context-name').disabled = true;
+            document.getElementById('initialize-btn').style.display = 'none';
+
+            const statusBox = document.getElementById('status-text');
+            statusBox.style.color = "var(--neon-emerald)";
+            statusBox.innerHTML = '<div class="status-pulse" style="background-color: var(--neon-emerald)"></div> Security Cleared // Gateway Live';
+
+            document.getElementById('payment-wrapper').style.display = 'block';
+        }
+
+        function unlockForm() {
+            document.getElementById('discord-id').disabled = false;
+            document.getElementById('tier-select').disabled = false;
+            document.getElementById('context-name').disabled = false;
+            document.getElementById('initialize-btn').style.display = 'block';
+
+            const statusBox = document.getElementById('status-text');
+            statusBox.style.color = "var(--neon-amber)";
+            statusBox.innerHTML = '<div class="status-pulse"></div> Awaiting Input Configuration';
+
+            document.getElementById('payment-wrapper').style.display = 'none';
+        }
+
         paypal.Buttons({
             style: { layout: 'vertical', color: 'blue', shape: 'rect', label: 'checkout' },
             createOrder: function(data, actions) {
@@ -164,11 +247,6 @@
                 const selectElement = document.getElementById('tier-select');
                 const chosenTier = selectElement.value;
                 const priceValue = selectElement.options[selectElement.selectedIndex].getAttribute('data-price');
-
-                if (!discordId || !contextName) {
-                    alert('CRITICAL ABORT: Identity data strings must be filled prior to runtime validation.');
-                    return false;
-                }
 
                 return actions.order.create({
                     purchase_units: [{
@@ -181,6 +259,7 @@
             onApprove: function(data, actions) {
                 return actions.order.capture().then(function(details) {
                     document.getElementById('success-alert').style.display = 'block';
+                    unlockForm();
                     document.getElementById('discord-id').value = '';
                     document.getElementById('context-name').value = '';
                 });
