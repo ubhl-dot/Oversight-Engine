@@ -1,21 +1,192 @@
-Tier
-Upfront Setup
-Monthly Retainer
-Key Features Included
-Baseline League-Management
-$35
-$12 / mo
-Core commands (/sign, /setschedule, /schedule, /stats, ect.) + dedicated backend database stat tracking.
-Semi-Automated League-Management
-$50
-$12 / mo
-Everything in Baseline + Streamer commands, Captain commands, support tickets, and staff applications.
-"Overseer" Management
-$100
-$15 / mo
-A complete, 1:1 premium clone of our flagship NRL Oversight setup.
-"MegaLeague" Management
-$250
-$20 / mo
-Heavy-duty database suite engineered to track massive, multi-division structures with high player counts.
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Oversight Initiative // League Provisioning Node</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-matrix: #060913;
+            --surface-panel: #0d1527;
+            --border-glow: #1e3a8a;
+            --text-primary: #f8fafc;
+            --text-muted: #64748b;
+            --neon-blue: #3b82f6;
+            --neon-emerald: #10b981;
+        }
 
+        body {
+            font-family: 'JetBrains Mono', monospace;
+            background-color: var(--bg-matrix);
+            background-image: 
+                linear-gradient(rgba(30, 58, 138, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(30, 58, 138, 0.05) 1px, transparent 1px);
+            background-size: 20px 20px;
+            color: var(--text-primary);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .terminal-container {
+            background-color: var(--surface-panel);
+            border: 1px solid var(--border-glow);
+            border-radius: 4px;
+            box-shadow: 0 0 30px rgba(30, 58, 138, 0.2);
+            width: 100%;
+            max-width: 480px;
+            overflow: hidden;
+        }
+
+        .terminal-header {
+            background-color: #090d1a;
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border-glow);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .terminal-dots { display: flex; gap: 6px; }
+        .dot { width: 8px; height: 8px; border-radius: 50%; background-color: #1e293b; }
+        .dot.active { background-color: var(--neon-blue); box-shadow: 0 0 8px var(--neon-blue); }
+
+        .status-badge {
+            font-size: 11px;
+            text-transform: uppercase;
+            color: var(--neon-emerald);
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .status-pulse {
+            width: 6px;
+            height: 6px;
+            background-color: var(--neon-emerald);
+            border-radius: 50%;
+            animation: pulse 1.8s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(0.95); opacity: 0.5; }
+            50% { transform: scale(1.2); opacity: 1; box-shadow: 0 0 8px var(--neon-emerald); }
+            100% { transform: scale(0.95); opacity: 0.5; }
+        }
+
+        .terminal-body { padding: 28px; }
+        .brand-title { margin: 0 0 6px 0; font-size: 18px; font-weight: 700; letter-spacing: -0.5px; text-transform: uppercase; }
+        .brand-subtitle { margin: 0 0 28px 0; font-size: 12px; color: var(--text-muted); line-height: 1.5; }
+        .input-group { margin-bottom: 22px; }
+        label { display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); margin-bottom: 8px; }
+        
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #1e293b;
+            border-radius: 4px;
+            background-color: #060913;
+            color: var(--text-primary);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+
+        input:focus, select:focus { outline: none; border-color: var(--neon-blue); box-shadow: 0 0 10px rgba(59, 130, 246, 0.15); }
+        #paypal-button-container { margin-top: 30px; min-height: 150px; }
+        
+        .system-alert {
+            background-color: rgba(16, 185, 129, 0.1);
+            border: 1px solid var(--neon-emerald);
+            color: #a7f3d0;
+            padding: 14px;
+            border-radius: 4px;
+            font-size: 12px;
+            margin-bottom: 24px;
+            display: none;
+            line-height: 1.4;
+        }
+    </style>
+    <script src="https://www.paypal.com/sdk/js?client-id=YOUR_LIVE_PAYPAL_CLIENT_ID&currency=USD&enable-funding=venmo"></script>
+</head>
+<body>
+
+    <div class="terminal-container">
+        <div class="terminal-header">
+            <div class="terminal-dots"><div class="dot active"></div><div class="dot"></div><div class="dot"></div></div>
+            <div class="status-badge"><div class="status-pulse"></div> League Matrix Node</div>
+        </div>
+        
+        <div class="terminal-body">
+            <h1 class="brand-title">Oversight Initiative</h1>
+            <p class="brand-subtitle">League Management Framework // Setup Authorization Portal</p>
+            
+            <div id="success-alert" class="system-alert">
+                ⚡ SECURE CORE TRANSMISSION SUCCESSFUL.<br>
+                Fulfillment processed. Check your administration log terminal for your license.
+            </div>
+
+            <!-- 🔄 UPDATED LABEL HERE -->
+            <div class="input-group">
+                <label for="discord-id">Discord User ID</label>
+                <input type="text" id="discord-id" placeholder="e.g. 1514849579818815508" autocomplete="off" required>
+            </div>
+
+            <div class="input-group">
+                <label for="tier-select">Select League Configuration Matrix</label>
+                <select id="tier-select">
+                    <option value="Baseline_League_Tier" data-price="35.00">Baseline League Management ($35.00, $12/m)</option>
+                    <option value="Semi_Automated_League_Tier" data-price="50.00">Semi-Automated Management ($50.00, $12/m)</option>
+                    <option value="Overseer_Management_Tier" data-price="100.00">"Overseer" Flagship Management ($100.00, $15/m)</option>
+                    <option value="MegaLeague_League_Tier" data-price="250.00">"MegaLeague" Multi-Div Suite ($250.00, $20/m)</option>
+                </select>
+            </div>
+
+            <div class="input-group">
+                <label for="context-name">Target League Scope Identity</label>
+                <input type="text" id="context-name" placeholder="e.g. National Roblox League" autocomplete="off" required>
+            </div>
+
+            <div id="paypal-button-container"></div>
+        </div>
+    </div>
+
+    <script>
+        paypal.Buttons({
+            style: { layout: 'vertical', color: 'blue', shape: 'rect', label: 'checkout' },
+            createOrder: function(data, actions) {
+                const discordId = document.getElementById('discord-id').value.trim();
+                const contextName = document.getElementById('context-name').value.trim();
+                const selectElement = document.getElementById('tier-select');
+                const chosenTier = selectElement.value;
+                const priceValue = selectElement.options[selectElement.selectedIndex].getAttribute('data-price');
+
+                if (!discordId || !contextName) {
+                    alert('CRITICAL ABORT: Identity data strings must be filled prior to runtime validation.');
+                    return false;
+                }
+
+                return actions.order.create({
+                    purchase_units: [{
+                        amount: { value: priceValue, currency_code: 'USD' },
+                        description: `Oversight League System - Tier: ${chosenTier.replace(/_/g, ' ')}`,
+                        custom_id: `${discordId}|${chosenTier}|${contextName}`
+                    }]
+                });
+            },
+            onApprove: function(data, actions) {
+                return actions.order.capture().then(function(details) {
+                    document.getElementById('success-alert').style.display = 'block';
+                    document.getElementById('discord-id').value = '';
+                    document.getElementById('context-name').value = '';
+                });
+            }
+        }).render('#paypal-button-container');
+    </script>
+</body>
+</html>
